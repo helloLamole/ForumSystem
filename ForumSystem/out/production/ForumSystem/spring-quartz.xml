@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!--调度器-->
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger" />
+            </list>
+        </property>
+    </bean>
+    <!--触发器-->
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="job1" />
+        <!--每天12:00运行一次 -->
+        <property name="cronExpression">
+            <value>${job1Time}</value>
+        </property>
+    </bean>
+    <!--执行者-->
+    <bean id="job1"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <bean class="com.lingo.forum.utils.QuartzTestClass" init-method="HelloWorld"/>
+        </property>
+        <property name="targetMethod" value="HelloWorld" />
+        <property name="concurrent" value="false" /><!-- 作业不并发调度，可以设置为true -->
+    </bean>
+</beans>
